@@ -84,7 +84,7 @@ describe("Profile Page", () => {
     renderWithRouter(<Profile />);
 
     // form elements
-    expect(screen.getByText("USER PROFILE")).toBeInTheDocument();
+    expect(screen.getByText(/USER PROFILE/i)).toBeInTheDocument();
     expect(screen.getByPlaceholderText("Enter Your Name")).toBeInTheDocument();
     expect(screen.getByPlaceholderText("Enter Your Email")).toBeInTheDocument();
     expect(
@@ -94,7 +94,7 @@ describe("Profile Page", () => {
     expect(
       screen.getByPlaceholderText("Enter Your Address")
     ).toBeInTheDocument();
-    expect(screen.getByRole("button", { name: "UPDATE" })).toBeInTheDocument();
+    expect(screen.getByRole("button", { name: /UPDATE/i })).toBeInTheDocument();
 
     // form values
     expect(screen.getByDisplayValue(mockUser.name)).toBeInTheDocument();
@@ -103,7 +103,7 @@ describe("Profile Page", () => {
     expect(screen.getByDisplayValue(mockUser.address)).toBeInTheDocument();
   });
 
-  it("should render Profile page with empty fields", () => {
+  it("should render Profile page with empty fields if user is not authenticated", () => {
     useAuth.mockReturnValue([{ user: emptyUser, token: mockToken }, jest.fn()]);
 
     renderWithRouter(<Profile />);
@@ -121,9 +121,6 @@ describe("Profile Page", () => {
     fireEvent.change(screen.getByPlaceholderText("Enter Your Name"), {
       target: { value: updatedMockUser.name },
     });
-    fireEvent.change(screen.getByPlaceholderText("Enter Your Email"), {
-      target: { value: updatedMockUser.email },
-    });
     fireEvent.change(screen.getByPlaceholderText("Enter Your Phone"), {
       target: { value: updatedMockUser.phone },
     });
@@ -137,9 +134,9 @@ describe("Profile Page", () => {
     expect(screen.getByPlaceholderText("Enter Your Name").value).toBe(
       updatedMockUser.name
     );
-    expect(screen.getByPlaceholderText("Enter Your Email").value).toBe(
-      updatedMockUser.email
-    );
+    // email to be disabled
+    expect(screen.getByPlaceholderText("Enter Your Email")).toBeDisabled();
+
     expect(screen.getByPlaceholderText("Enter Your Phone").value).toBe(
       updatedMockUser.phone
     );
@@ -170,9 +167,6 @@ describe("Profile Page", () => {
     fireEvent.change(screen.getByPlaceholderText("Enter Your Name"), {
       target: { value: updatedMockUser.name },
     });
-    fireEvent.change(screen.getByPlaceholderText("Enter Your Email"), {
-      target: { value: updatedMockUser.email },
-    });
     fireEvent.change(screen.getByPlaceholderText("Enter Your Phone"), {
       target: { value: updatedMockUser.phone },
     });
@@ -182,12 +176,12 @@ describe("Profile Page", () => {
     fireEvent.change(screen.getByPlaceholderText("Enter Your Password"), {
       target: { value: "newpass" },
     });
-    fireEvent.click(screen.getByText("UPDATE"));
+    fireEvent.click(screen.getByText(/UPDATE/i));
 
     await waitFor(() => {
       expect(axios.put).toHaveBeenCalledWith("/api/v1/auth/profile", {
         name: updatedMockUser.name,
-        email: updatedMockUser.email,
+        email: mockUser.email,
         phone: updatedMockUser.phone,
         address: updatedMockUser.address,
         password: "newpass",
@@ -218,9 +212,6 @@ describe("Profile Page", () => {
     fireEvent.change(screen.getByPlaceholderText("Enter Your Name"), {
       target: { value: updatedMockUser.name },
     });
-    fireEvent.change(screen.getByPlaceholderText("Enter Your Email"), {
-      target: { value: updatedMockUser.email },
-    });
     fireEvent.change(screen.getByPlaceholderText("Enter Your Phone"), {
       target: { value: updatedMockUser.phone },
     });
@@ -230,14 +221,14 @@ describe("Profile Page", () => {
     fireEvent.change(screen.getByPlaceholderText("Enter Your Password"), {
       target: { value: "newpass" },
     });
-    fireEvent.click(screen.getByText("UPDATE"));
+    fireEvent.click(screen.getByText(/UPDATE/i));
 
     await waitFor(() => {
       expect(axios.put).toHaveBeenCalledWith("/api/v1/auth/profile", {
         name: updatedMockUser.name,
-        email: updatedMockUser.email,
         phone: updatedMockUser.phone,
         address: updatedMockUser.address,
+        email: mockUser.email,
         password: "newpass",
       });
     });
@@ -247,7 +238,6 @@ describe("Profile Page", () => {
   });
 
   it("should log and display error message if error is thrown", async () => {
-    // covers 53 - 54
     // mock error thrown
     const mockError = new Error("Error updating");
 
@@ -262,9 +252,6 @@ describe("Profile Page", () => {
     fireEvent.change(screen.getByPlaceholderText("Enter Your Name"), {
       target: { value: updatedMockUser.name },
     });
-    fireEvent.change(screen.getByPlaceholderText("Enter Your Email"), {
-      target: { value: updatedMockUser.email },
-    });
     fireEvent.change(screen.getByPlaceholderText("Enter Your Phone"), {
       target: { value: updatedMockUser.phone },
     });
@@ -274,14 +261,14 @@ describe("Profile Page", () => {
     fireEvent.change(screen.getByPlaceholderText("Enter Your Password"), {
       target: { value: "newpass" },
     });
-    fireEvent.click(screen.getByText("UPDATE"));
+    fireEvent.click(screen.getByText(/UPDATE/i));
 
     await waitFor(() => {
       expect(axios.put).toHaveBeenCalledWith("/api/v1/auth/profile", {
         name: updatedMockUser.name,
-        email: updatedMockUser.email,
         phone: updatedMockUser.phone,
         address: updatedMockUser.address,
+        email: mockUser.email,
         password: "newpass",
       });
     });
