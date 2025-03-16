@@ -16,10 +16,10 @@ import "@testing-library/jest-dom";
 import CreateProduct, {
   CREATE_PRODUCT_STRINGS,
   API_URLS,
-} from "../../pages/admin/CreateProduct";
-import { AuthProvider } from "../../context/auth";
-import { CartProvider } from "../../context/cart";
-import { SearchProvider } from "../../context/search";
+} from "../../../pages/admin/CreateProduct";
+import { AuthProvider } from "../../../context/auth";
+import { CartProvider } from "../../../context/cart";
+import { SearchProvider } from "../../../context/search";
 
 jest.spyOn(toast, "success");
 jest.spyOn(toast, "error");
@@ -131,7 +131,7 @@ describe("CreateProduct Integration Tests", () => {
     expect(categorySelect).toBeInTheDocument();
     const options = within(categorySelect).getAllByRole("option");
     expect(options).toHaveLength(mockCategories.length);
-    expect(options[0]).toHaveTextContent("Electronics");
+    expect(options[0]).toHaveTextContent(mockCategories[0].name);
   });
 
   it("should fill and submit the form, calling API and showing success toast", async () => {
